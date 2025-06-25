@@ -1,0 +1,7 @@
+# Local dependencies and artifacts
+node_modules
+dist
+bun.lockb.bak
+.env*
+# Miscellaneous
+.DS_Store
