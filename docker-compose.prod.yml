@@ -1,19 +1,32 @@
 services:
   api:
+    # Build the final “runtime” image only (small & secure)
     build:
       context: .
-      dockerfile: Dockerfile
       target: runtime
-    image: mushroom_bet_api-prod
+    image: mushroom_bet_api_prod:latest
     container_name: mushroom_bet_api
+    restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 3001
+      # In real life put this in Docker secrets or an env-file
       DATABASE_URL: postgres://postgres:postgres@db:5432/mushroom
     ports:
       - '3001:3001'
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    # Optional runtime limits — tweak to your host capacity
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   db:
     image: postgres:16
@@ -25,6 +38,10 @@ services:
       POSTGRES_DB: mushroom
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+      interval: 10s
+      retries: 5
 
 volumes:
   pgdata_prod:

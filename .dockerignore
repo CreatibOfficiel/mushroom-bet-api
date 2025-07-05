@@ -1,7 +1,10 @@
-# Local dependencies and artifacts
 node_modules
 dist
-bun.lockb.bak
+.git
+.vscode
+Dockerfile*
+docker-compose*.yml
 .env*
-# Miscellaneous
-.DS_Store
+*.log
+coverage
+.prisma/client

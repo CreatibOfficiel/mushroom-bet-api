@@ -1,33 +1,73 @@
+# ---------------------------------------------------------------------
+# 1️⃣  BASE (dependencies shared by every stage)
+# ---------------------------------------------------------------------
 ARG BUN_VERSION=1.1.29
-
-# ——— Build stage —————————————————————————————————————————————————————
-FROM oven/bun:${BUN_VERSION} AS build
+# The slim tag keeps the image small while still including system libs
+FROM oven/bun:${BUN_VERSION}-slim AS base
 WORKDIR /app
 
-# Copy dependencies first to leverage Docker cache
+# Copy lock-file first so we can leverage Docker’s layer-cache
 COPY bun.lockb package.json ./
-RUN bun install --frozen-lockfile
 
-# Copy the rest of the code
+# ---------------------------------------------------------------------
+# 2️⃣  DEV STAGE (hot-reload, full tool-chain)
+# ---------------------------------------------------------------------
+FROM base AS dev
+
+# Cache Bun’s global dir to accelerate rebuilds
+RUN --mount=type=cache,target=/root/.bun \
+    bun install --frozen-lockfile        
+    # dev + prod deps
+
+# Copy source after dependencies to keep cache effective
 COPY . .
 
-# Generate Prisma client, compile TypeScript, then clean up
-RUN bun run prisma:generate \
- && bun run build
+# Default command for local development
+CMD ["bun", "--hot", "src/main.ts"]
 
-# ——— Runtime stage ——————————————————————————————————————————————————
-FROM oven/bun:${BUN_VERSION} AS runtime
+# ---------------------------------------------------------------------
+# 3️⃣  BUILD STAGE (type-checking + transpile)
+# ---------------------------------------------------------------------
+FROM base AS builder
+ENV NODE_ENV=production
+
+# 1. Install *all* deps because tsc/prisma need types
+RUN --mount=type=cache,target=/root/.bun \
+    bun install --frozen-lockfile
+
+# 2. Copy code & produce artefacts
+COPY . .
+RUN bun run prisma:generate && bun run build
+
+# 3. Remove dev-only packages in place
+RUN bun install --production --frozen-lockfile --ignore-scripts
+
+# ---------------------------------------------------------------------
+# 4️⃣  RUNTIME STAGE (minimal, non-root)
+# ---------------------------------------------------------------------
+FROM oven/bun:${BUN_VERSION}-slim AS runtime
 WORKDIR /app
+ENV NODE_ENV=production
 
-# Copy compiled artifacts and Prisma client from build stage
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/prisma ./prisma
+# Tiny system layer for curl used by the health-check
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# Environment variables
-ENV NODE_ENV=production \
-    PORT=3001 \
-    DATABASE_URL=postgresql://postgres:postgres@db:5432/mushroom
+# Create non-privileged user (idempotent)
+RUN id -u bun &>/dev/null || adduser --disabled-password --uid 10001 bun
 
+# Copy only what the app needs to start
+COPY --from=builder --chown=bun:bun /app/dist               ./dist
+COPY --from=builder --chown=bun:bun /app/node_modules       ./node_modules
+COPY --from=builder --chown=bun:bun /app/prisma/schema.prisma ./prisma/schema.prisma
+COPY --from=builder --chown=bun:bun /app/package.json       ./package.json
+COPY --from=builder --chown=bun:bun /app/entrypoint.sh      ./entrypoint.sh
+
+# Self-contained health-check (fails container-wide if /health is 500/404)
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+    CMD curl -f http://localhost:3001/health || exit 1
+
+USER bun
 EXPOSE 3001
-CMD ["bun", "dist/main.js"]
+CMD ["./entrypoint.sh"]    
