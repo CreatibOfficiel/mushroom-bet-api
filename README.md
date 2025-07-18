@@ -1,98 +1,382 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🍄 Mushroom Bet API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Une API NestJS pour un système de paris sur Mario Kart avec gestion des skins et personnages.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## ⚡ Quick Start
 
 ```bash
-$ bun install
+# Clone + Setup en une commande
+git clone <repository-url> && cd mushroom-bet-api && npm run setup
+
+# L'API sera disponible sur http://localhost:3001
+# Tests : npm run test:e2e
 ```
 
-## Compile and run the project
+## 📋 Table des matières
+
+- [Description](#description)
+- [Technologies utilisées](#technologies-utilisées)
+- [Prérequis](#prérequis)
+- [Installation rapide](#installation-rapide)
+- [Installation manuelle](#installation-manuelle)
+- [Utilisation](#utilisation)
+- [Tests](#tests)
+- [API Endpoints](#api-endpoints)
+- [Base de données](#base-de-données)
+- [Scripts disponibles](#scripts-disponibles)
+- [Développement](#développement)
+
+## 📖 Description
+
+Cette API permet de gérer un système de paris sur Mario Kart avec :
+
+- **Gestion des skins** : 127 skins de personnages Mario Kart disponibles
+- **Système de joueurs** : Gestion des utilisateurs avec skins associés
+- **Base de données** : PostgreSQL avec Prisma ORM
+- **Tests** : Tests unitaires et e2e complets
+- **Docker** : Environnement de développement containerisé
+
+## 🛠 Technologies utilisées
+
+- **Backend** : NestJS (Node.js + TypeScript)
+- **Base de données** : PostgreSQL
+- **ORM** : Prisma
+- **Conteneurisation** : Docker & Docker Compose
+- **Tests** : Jest
+- **Validation** : class-validator & class-transformer
+- **Code quality** : ESLint, Prettier, Husky
+
+## 📋 Prérequis
+
+Avant de commencer, assurez-vous d'avoir installé :
+
+- [Node.js](https://nodejs.org/) (version 18 ou supérieure)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Git](https://git-scm.com/)
+
+## 🚀 Installation rapide
+
+Pour les nouveaux développeurs qui clonent le projet pour la première fois :
 
 ```bash
-# development
-$ bun run start
+# 1. Cloner le repository
+git clone <repository-url>
+cd mushroom-bet-api
 
-# watch mode
-$ bun run start:dev
-
-# production mode
-$ bun run start:prod
+# 2. Lancer le setup automatique (fait TOUT automatiquement)
+npm run setup
 ```
 
-## Run tests
+Le script `npm run setup` va automatiquement :
+
+- ✅ Créer le fichier `.env` depuis `.env.example` (si inexistant)
+- ✅ Installer toutes les dépendances
+- ✅ Démarrer les services Docker (PostgreSQL)
+- ✅ Créer les bases de données (`mushroom` et `mushroom_test`)
+- ✅ Appliquer toutes les migrations Prisma
+- ✅ Seeder les deux bases avec 127 skins Mario Kart
+- ✅ Générer le client Prisma
+
+**C'est tout !** Votre environnement est prêt en une seule commande.
+
+## 🔧 Installation manuelle
+
+Si vous préférez faire étape par étape :
 
 ```bash
-# unit tests
-$ bun run test
+# 1. Installer les dépendances
+npm install
 
-# e2e tests
-$ bun run test:e2e
+# 2. Démarrer les services Docker
+npm run docker:up
 
-# test coverage
-$ bun run test:cov
+# 3. Attendre que PostgreSQL soit prêt (environ 10 secondes)
+
+# 4. Créer les bases de données
+npm run setup:db
+
+# 5. Appliquer les migrations
+npm run db:migrate
+npm run db:test:migrate
+
+# 6. Seeder les bases de données
+npm run db:seed
+npm run db:test:seed
+
+# 7. Générer le client Prisma
+npx prisma generate
 ```
 
-## Deployment
+## 🎯 Utilisation
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Démarrer l'application
 
 ```bash
-$ bun install -g @nestjs/mau
-$ mau deploy
+# Mode développement (avec hot reload)
+npm run start:dev
+
+# Mode production
+npm run start:prod
+
+# Mode debug
+npm run start:debug
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+L'API sera accessible sur : **http://localhost:3001**
 
-## Resources
+### Vérifier que tout fonctionne
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+# Tester l'endpoint principal
+curl http://localhost:3001
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Tester l'endpoint des skins
+curl http://localhost:3001/skins
+```
 
-## Support
+## 🧪 Tests
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Tests unitaires
 
-## Stay in touch
+```bash
+# Lancer tous les tests
+npm test
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Tests en mode watch
+npm run test:watch
 
-## License
+# Tests avec couverture
+npm run test:cov
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Tests e2e (end-to-end)
+
+```bash
+# Lancer les tests e2e
+npm run test:e2e
+```
+
+**Note** : Les tests e2e utilisent automatiquement la base `mushroom_test` qui est créée lors du setup.
+
+## 🔗 API Endpoints
+
+### Skins
+
+| Méthode | Endpoint                 | Description              |
+| ------- | ------------------------ | ------------------------ |
+| `GET`   | `/skins`                 | Récupérer tous les skins |
+| `GET`   | `/skins?character=MARIO` | Filtrer par personnage   |
+| `POST`  | `/skins`                 | Créer un nouveau skin    |
+| `POST`  | `/skins/bulk`            | Créer plusieurs skins    |
+
+### Exemples
+
+```bash
+# Récupérer tous les skins
+curl http://localhost:3001/skins
+
+# Filtrer les skins de Mario
+curl http://localhost:3001/skins?character=MARIO
+
+# Créer un nouveau skin
+curl -X POST http://localhost:3001/skins \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Mario Fire", "character": "MARIO"}'
+```
+
+## 🗄️ Base de données
+
+### Structure
+
+```sql
+-- Enum des personnages disponibles
+enum Character {
+  MARIO, LUIGI, PEACH, DAISY, ROSALINA, PAULINE,
+  YOSHI, BIRDO, TOAD, TOADETTE,
+  BABY_MARIO, BABY_LUIGI, BABY_PEACH, BABY_DAISY, BABY_ROSALINA,
+  METAL_MARIO, PINK_GOLD_PEACH, GOLD_MARIO,
+  WARIO, WALUIGI, DONKEY_KONG, DIDDY_KONG, BOWSER, BOWSER_JR,
+  DRY_BONES, DRY_BOWSER, KING_BOO, PETEY_PIRANHA,
+  KOOPA_TROOPA, SHY_GUY, LAKITU, TOADSWORTH, HAMMER_BRO,
+  BOOMERANG_BRO, FIRE_BRO, ICE_BRO,
+  KAMEK, MAGIKOOPA, CHARGIN_CHUCK, WIGGLER, SPIKE,
+  INKLING_BOY, INKLING_GIRL, LINK, VILLAGER_BOY, VILLAGER_GIRL,
+  ISABELLE, CAPTAIN_FALCON, ZERO_SUIT_SAMUS
+}
+
+-- Table des skins
+model Skin {
+  id        Int       @id @default(autoincrement())
+  name      String
+  character Character
+  players   Player[]
+}
+
+-- Table des joueurs
+model Player {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  passwordHash String
+  displayName  String?
+  skinId       Int?
+  skin         Skin?   @relation(fields: [skinId], references: [id])
+}
+```
+
+### Commandes Prisma utiles
+
+```bash
+# Voir l'état de la base de données
+npx prisma studio
+
+# Créer une nouvelle migration
+npx prisma migrate dev --name nom_migration
+
+# Réinitialiser la base de données
+npx prisma migrate reset
+
+# Générer le client Prisma
+npx prisma generate
+```
+
+## 📝 Scripts disponibles
+
+| Script                 | Description                                                   |
+| ---------------------- | ------------------------------------------------------------- |
+| `npm run setup`        | **Setup complet automatique** (recommandé pour nouveaux devs) |
+| `npm run setup:db`     | Créer uniquement les bases de données                         |
+| `npm run reset`        | **Reset complet de l'environnement** (supprime tout)          |
+| `npm run start:dev`    | Démarrer en mode développement                                |
+| `npm run build`        | Compiler l'application                                        |
+| `npm test`             | Lancer les tests unitaires                                    |
+| `npm run test:e2e`     | Lancer les tests e2e                                          |
+| `npm run lint`         | Vérifier le code avec ESLint                                  |
+| `npm run format`       | Formater le code avec Prettier                                |
+| `npm run db:migrate`   | Appliquer les migrations                                      |
+| `npm run db:seed`      | Seeder la base principale                                     |
+| `npm run db:test:seed` | Seeder la base de test                                        |
+| `npm run docker:up`    | Démarrer les services Docker                                  |
+| `npm run docker:down`  | Arrêter les services Docker                                   |
+
+## 🔧 Développement
+
+### Structure du projet
+
+```
+mushroom-bet-api/
+├── src/
+│   ├── app.module.ts          # Module principal
+│   ├── main.ts                # Point d'entrée
+│   ├── prisma/                # Configuration Prisma
+│   └── skin/                  # Module des skins
+├── prisma/
+│   ├── schema.prisma          # Schéma de base de données
+│   ├── seed.ts                # Script de seeding
+│   └── migrations/            # Migrations
+├── test/                      # Tests e2e
+├── scripts/                   # Scripts de setup
+│   ├── setup.sh               # Setup complet automatique
+│   ├── setup-db.sh            # Création des bases de données
+│   └── reset.sh               # Reset de l'environnement
+├── .env.example               # Template des variables d'environnement
+├── .env                       # Variables d'environnement (auto-créé)
+├── docker-compose.dev.yml     # Configuration Docker
+└── Dockerfile                 # Image Docker
+```
+
+### Variables d'environnement
+
+Le projet inclut un fichier `.env.example` avec toutes les variables nécessaires. Le script `npm run setup` copie automatiquement ce fichier vers `.env`.
+
+Pour configuration manuelle :
+
+```bash
+# Copier le template
+cp .env.example .env
+
+# Puis éditer .env si nécessaire
+```
+
+**Variables principales :**
+
+- `DATABASE_URL` : Base de données principale
+- `DATABASE_URL_TEST` : Base de données de test
+- `PORT` : Port de l'API (défaut: 3001)
+- `NODE_ENV` : Environnement (development/production)
+
+**Note** : Les valeurs par défaut dans `.env.example` fonctionnent parfaitement avec Docker Compose.
+
+### Hooks Git
+
+Le projet utilise Husky pour les hooks Git :
+
+- **pre-commit** : Lint et format du code
+- **commit-msg** : Validation des messages de commit (Conventional Commits)
+
+### Ajout de nouvelles fonctionnalités
+
+1. Créer une nouvelle branche : `git checkout -b feature/ma-feature`
+2. Développer la fonctionnalité
+3. Ajouter des tests
+4. Vérifier que tout passe : `npm test && npm run test:e2e`
+5. Créer une pull request
+
+## 🐛 Dépannage
+
+### Problèmes courants
+
+**Docker n'est pas démarré :**
+
+```bash
+# Vérifier l'état de Docker
+docker info
+
+# Redémarrer Docker Desktop si nécessaire
+```
+
+**Base de données non créée :**
+
+```bash
+# Recréer les bases de données
+npm run setup:db
+```
+
+**Client Prisma obsolète :**
+
+```bash
+# Régénérer le client
+npx prisma generate
+```
+
+**Ports occupés :**
+
+```bash
+# Vérifier les ports utilisés
+lsof -i :3001  # Port API
+lsof -i :5432  # Port PostgreSQL
+```
+
+### Logs utiles
+
+```bash
+# Logs de l'application
+npm run start:dev
+
+# Logs Docker
+docker-compose -f docker-compose.dev.yml logs -f
+
+# Logs PostgreSQL
+docker-compose -f docker-compose.dev.yml logs -f db
+```
+
+## 📞 Support
+
+Pour toute question ou problème :
+
+1. Vérifier cette documentation
+2. Consulter les logs d'erreur
+3. Tenter `npm run setup` pour réinitialiser l'environnement
+
+---
+
+**Happy coding! 🚀**
