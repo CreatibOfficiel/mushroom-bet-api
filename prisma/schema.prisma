@@ -6,10 +6,79 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  binaryTargets = ["native", "linux-arm64-openssl-1.1.x"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum Character {
+  MARIO
+  LUIGI
+  PEACH
+  DAISY
+  ROSALINA
+  PAULINE
+  YOSHI
+  BIRDO
+  TOAD
+  TOADETTE
+  BABY_MARIO
+  BABY_LUIGI
+  BABY_PEACH
+  BABY_DAISY
+  BABY_ROSALINA
+  BOWSER
+  BOWSER_JR
+  GOOMBA
+  KOOPA_TROOPA
+  DRY_BONES
+  PIRANHA_PLANT
+  HAMMER_BRO
+  CHARGIN_CHUCK
+  MONTY_MOLE
+  POKEY
+  PARA_BIDDYBUD
+  SPIKE
+  SHY_GUY
+  WIGGLER
+  KING_BOO
+  PEEPA
+  DONKEY_KONG
+  WARIO
+  WALUIGI
+  NABBIT
+  PIANTA
+  MOO_MOO
+  PENGUIN
+  SIDESTEPPER
+  SNOWMAN
+  SWOOP
+  STINGBY
+  CATAQUACK
+  CHEEP_CHEEP
+  FISH_BONE
+  DOLPHIN
+  ROCKY_WRENCH
+  COIN_COFFER
+  CONKDOR
+  LAKITU
+}
+
+model Player {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  displayName  String?
+  skinId       Int?
+  skin         Skin? @relation(fields: [skinId], references: [id])
+}
+
+model Skin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  character Character
+  players   Player[]
 }
