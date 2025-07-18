@@ -7,4 +7,3 @@ docker-compose*.yml
 .env*
 *.log
 coverage
-.prisma/client
