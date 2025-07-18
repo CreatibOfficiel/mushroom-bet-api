@@ -28,7 +28,13 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn'
+    },
+  },
+  // Specific rules for Prisma/infrastructure files
+  {
+    files: ['prisma/**/*.ts', 'src/prisma/**/*.ts'],
+    rules: {
       '@typescript-eslint/no-misused-promises': 'off',
       '@typescript-eslint/require-await': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
