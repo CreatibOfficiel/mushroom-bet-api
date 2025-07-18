@@ -6,5 +6,6 @@ module.exports = {
     plugins: ['@ianvs/prettier-plugin-sort-imports'],
     importOrder: ['^@nestjs', '<THIRD_PARTY_MODULES>', '^@/', '^[./]'],
     importOrderSeparation: true,
+    importOrderParserPlugins: ['typescript', 'decorators-legacy'],
   };
   
