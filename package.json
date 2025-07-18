@@ -6,29 +6,41 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start:dev": "bun --hot src/main.ts",
-    "start:debug": "bun --hot --inspect src/main.ts",
-    "build": "bunx tsc -p tsconfig.build.json",
-    "start": "bun dist/main.js",
-    "prisma:generate": "bunx prisma generate",
-    "prisma:migrate": "bunx prisma migrate dev",
-    "lint": "bunx eslint . --ext .ts",
-    "format": "bunx prettier --write .",
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write .",
     "prepare": "husky",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "node --require ts-node/register --require tsconfig-paths/register node_modules/.bin/jest --config ./test/jest-e2e.json",
+    "seed": "ts-node prisma/seed.ts",
+    "db:migrate": "npx prisma migrate deploy",
+    "db:seed": "npm run seed",
+    "db:test:migrate": "DATABASE_URL=\"postgres://postgres:postgres@localhost:5432/mushroom_test\" npx prisma migrate deploy",
+    "db:test:seed": "DATABASE_URL=\"postgres://postgres:postgres@localhost:5432/mushroom_test\" npm run seed",
+    "docker:up": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "setup": "chmod +x scripts/setup.sh && ./scripts/setup.sh",
+    "setup:db": "chmod +x scripts/setup-db.sh && ./scripts/setup-db.sh",
+    "reset": "chmod +x scripts/reset.sh && ./scripts/reset.sh"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
-    "@prisma/client": "^6.10.1",
+    "@prisma/client": "^6.12.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
@@ -84,10 +96,10 @@
   },
   "lint-staged": {
     "**/*.ts": [
-      "bunx eslint --fix"
+      "npx eslint --fix"
     ],
     "**/*.{ts,json,md,yml}": [
-      "bunx prettier --write"
+      "npx prettier --write"
     ]
   }
 }
